@@ -166,8 +166,10 @@ def resample_quantiles(counts, num_resamples, target_quantile_value):
 
 
 def run_zscore_analysis(sample_status, sample_counts):
-    raw_counts = [sample_counts.get(sample, 0) for sample, _ in sample_status.items()]
-    quantiles = resample_quantiles(raw_counts, 100, 0.95)
+    ## 20220826: LF rewrite
+    # Change: estimate quantiles in the control population _only_:
+    control_counts = [sample_counts.get(sample, 0) for sample, status in sample_status.items() if status == "control"]
+    quantiles = resample_quantiles(control_counts, 100, 0.95)
     (mu, sigma) = stats.norm.fit(quantiles)
     sigma = max(sigma, 1)
 
@@ -177,15 +179,32 @@ def run_zscore_analysis(sample_status, sample_counts):
         if status == "case"
     }
 
-    assert len(case_counts) >= 1, "Manifest must contain at least one case"
+    control_counts = {
+        sample: sample_counts.get(sample, 0)
+        for sample, status in sample_status.items()
+        if status == "control"
+    }
 
+    assert len(case_counts) >= 1, "Manifest must contain at least one case"
+    assert len(control_counts) >= 1, "Manifest must contain at least one control"
+    # Change: record zscores for cases and controls in the control distribution:
+    case_zscores = list()
     cases_with_high_counts = {}
-    top_zscore = -1
+    top_case_zscore = -1
     for sample, count in case_counts.items():
         zscore = (count - mu) / sigma
-
-        if zscore > 1.0:
+        if zscore > 5.0:
             cases_with_high_counts[sample] = count
-            top_zscore = max(top_zscore, zscore)
-
-    return (top_zscore, cases_with_high_counts)
+            top_case_zscore = max(top_case_zscore, zscore)
+        case_zscores.append(zscore)
+    control_zscores = list()
+    controls_with_high_counts = {}
+    top_control_zscore = -1
+    for sample, count in control_counts.items():
+        zscore = (count - mu) / sigma
+        if zscore > 5.0:
+            controls_with_high_counts[sample] = count
+            top_control_zscore = max(top_control_zscore, zscore)
+        control_zscores.append(zscore)
+    return (top_case_zscore, cases_with_high_counts, list(case_counts.values()), case_zscores, top_control_zscore,
+            controls_with_high_counts, list(control_counts.values()), control_zscores)

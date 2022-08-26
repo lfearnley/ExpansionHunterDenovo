@@ -21,6 +21,7 @@
 #
 
 import argparse
+import gzip
 import logging
 import sys
 import json
@@ -79,9 +80,10 @@ def run(params):
     manifest = common.load_manifest(params.manifest_path)
     sample_status = common.extract_case_control_assignments(manifest)
 
-    header = "contig\tstart\tend\tmotif\ttop_case_zscore\thigh_case_counts\tcounts"
-    with open(params.output_path, "w") as results_file:
-        print(header, file=results_file)
+    header = "contig\tstart\tend\tmotif\ttop_case_zscore\thigh_case_counts\tcase_counts\tcase_zscores\ttop_control_zscore\thigh_control_counts\tcontrol_counts\tcontrol_zscores\n"
+    with gzip.open(params.output_path, "wt") as results_file:
+        results_file.write(header)
+        results_file.write("\n")
         for row in count_table:
             region_encoding = row["region"]
             if region_encoding == "unaligned":
@@ -91,30 +93,37 @@ def run(params):
             start, end = coords.split("-")
             start, end = int(start), int(end)
 
-            top_case_zscore, cases_with_high_counts = common.run_zscore_analysis(
+            top_case_zscore, cases_with_high_counts, case_counts, case_zscores, top_control_zscore, \
+             controls_with_high_counts, control_counts, control_zscores = common.run_zscore_analysis(
                 sample_status, row["sample_counts"]
             )
 
             if len(cases_with_high_counts) == 0:
                 continue
 
-            encoded_case_info = ",".join(
+            encoded_case_label_info = ",".join(
                 "{}:{:.2f}".format(s, c) for s, c in cases_with_high_counts.items()
             )
-            count_encoding = ",".join(
-                ["{:.2f}".format(c) for _, c in row["sample_counts"].items()]
+            encoded_control_label_info = ",".join(
+                "{}:{:.2f}".format(s, c) for s, c in controls_with_high_counts.items()
             )
+            encoded_case_count_info = ",".join(case_counts)
+            encoded_case_zscore_info = ",".join(case_zscores)
+            encoded_control_count_info = ",".join(control_counts)
+            encoded_control_zscore_info = ",".join(control_zscores)
 
-            print(
-                contig,
+            results_file.write("\t".join([contig,
                 start,
                 end,
                 row["unit"],
                 "{:.2f}".format(top_case_zscore),
-                encoded_case_info,
-                count_encoding,
-                sep="\t",
-                file=results_file,
-            )
+                encoded_case_label_info,
+                encoded_case_count_info,
+                encoded_case_zscore_info,
+                "{:.2f}".format(top_control_zscore),
+                encoded_control_label_info,
+                encoded_control_count_info,
+                encoded_control_zscore_info]))
+            results_file.write("\n")
 
     logging.info("Done")
