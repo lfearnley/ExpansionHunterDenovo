@@ -193,7 +193,7 @@ def run_zscore_analysis(sample_status, sample_counts):
     top_case_zscore = -1
     for sample, count in case_counts.items():
         zscore = (count - mu) / sigma
-        if zscore > 5.0:
+        if zscore > 1.0:
             cases_with_high_counts[sample] = count
             top_case_zscore = max(top_case_zscore, zscore)
         case_zscores.append(zscore)
@@ -202,7 +202,7 @@ def run_zscore_analysis(sample_status, sample_counts):
     top_control_zscore = -1
     for sample, count in control_counts.items():
         zscore = (count - mu) / sigma
-        if zscore > 5.0:
+        if zscore > 1.0:
             controls_with_high_counts[sample] = count
             top_control_zscore = max(top_control_zscore, zscore)
         control_zscores.append(zscore)
