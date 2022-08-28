@@ -107,10 +107,10 @@ def run(params):
             encoded_control_label_info = ",".join(
                 "{}:{:.2f}".format(s, c) for s, c in controls_with_high_counts.items()
             )
-            encoded_case_count_info = ",".join(case_counts)
-            encoded_case_zscore_info = ",".join(case_zscores)
-            encoded_control_count_info = ",".join(control_counts)
-            encoded_control_zscore_info = ",".join(control_zscores)
+            encoded_case_count_info = ",".join([str(x) for x in case_counts])
+            encoded_case_zscore_info = ",".join([str(x) for x in case_zscores])
+            encoded_control_count_info = ",".join([str(x) for x in control_counts])
+            encoded_control_zscore_info = ",".join([str(x) for x in control_zscores])
 
             results_file.write("\t".join([contig,
                 start,
