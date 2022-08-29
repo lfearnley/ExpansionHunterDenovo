@@ -111,8 +111,7 @@ def run(params):
             encoded_case_zscore_info = ",".join([str(x) for x in case_zscores])
             encoded_control_count_info = ",".join([str(x) for x in control_counts])
             encoded_control_zscore_info = ",".join([str(x) for x in control_zscores])
-
-            results_file.write("\t".join([contig,
+            out_list = [contig,
                 start,
                 end,
                 row["unit"],
@@ -123,7 +122,8 @@ def run(params):
                 "{:.2f}".format(top_control_zscore),
                 encoded_control_label_info,
                 encoded_control_count_info,
-                encoded_control_zscore_info]))
+                encoded_control_zscore_info]
+            results_file.write("\t".join([str(x) for x in out_list]))
             results_file.write("\n")
 
     logging.info("Done")
