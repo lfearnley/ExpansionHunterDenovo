@@ -206,7 +206,7 @@ def run_zscore_analysis(sample_status, sample_counts):
             controls_with_high_counts[sample] = count
             top_control_zscore = max(top_control_zscore, zscore)
         control_zscores.append(zscore)
-    detected_cases = max(0,len(filter(list(None, case_counts.values()))))
+    detected_cases = max(0,len(filter(None, list(case_counts.values()))))
     detected_controls = max(0,len(filter(None, list(control_counts.values()))))
     return (detected_cases, detected_controls, top_case_zscore, cases_with_high_counts, list(case_counts.values()), case_zscores, top_control_zscore,
             controls_with_high_counts, list(control_counts.values()), control_zscores)
