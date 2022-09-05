@@ -108,8 +108,11 @@ $ANNOVAR_ANNOTATE_VARIATION \
 # Reformat output: move gene and region back and remove temp ref/alt columns
 head -n 1 $EHDN_RESULTS | awk '{OFS=FS="\t"} $5="gene\tregion\t"$5' \
     > $EHDN_ANNOTATED
-awk 'BEGIN {OFS="\t"}; {print $3, $4, $5, $8, $2, $1, $9, $10, $11}' \
+awk 'BEGIN {OFS="\t"}; {print $3, $4, $5, $8, $2, $1, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18}' \
     $AVINPUT.variant_function >> $EHDN_ANNOTATED
 
-
-
+# Clean up
+rm $AVINPUT
+rm $AVINPUT.exonic_variant_function
+rm $AVINPUT.log
+rm $AVINPUT.variant_function
