@@ -94,7 +94,6 @@ then
     echo -e "Error: unexpected column names. EHdn result file does not appear to have the correct format\n" >&2
     exit 1
 fi
-    
 
 AVINPUT=${EHDN_ANNOTATED}.temp${RANDOM}.avinput
 
@@ -112,10 +111,5 @@ head -n 1 $EHDN_RESULTS | awk '{OFS=FS="\t"} $5="gene\tregion\t"$5' \
 awk 'BEGIN {OFS="\t"}; {print $3, $4, $5, $8, $2, $1, $9, $10, $11}' \
     $AVINPUT.variant_function >> $EHDN_ANNOTATED
 
-# Clean up
-rm $AVINPUT
-rm $AVINPUT.exonic_variant_function
-rm $AVINPUT.log
-rm $AVINPUT.variant_function
 
 

@@ -80,8 +80,8 @@ def run(params):
     manifest = common.load_manifest(params.manifest_path)
     sample_status = common.extract_case_control_assignments(manifest)
 
-    header = "contig\tstart\tend\tmotif\ttop_case_zscore\thigh_case_counts\tcase_counts\tcase_zscores\ttop_control_zscore\thigh_control_counts\tcontrol_counts\tcontrol_zscores\n"
-    with gzip.open(params.output_path, "wt") as results_file:
+    header = "contig\tstart\tend\tmotif\tdetected_cases\tdetected_controls\ttop_case_zscore\thigh_case_counts\tcase_counts\tcase_zscores\ttop_control_zscore\thigh_control_counts\tcontrol_counts\tcontrol_zscores"
+    with open(params.output_path, "wt") as results_file:
         results_file.write(header)
         results_file.write("\n")
         for row in count_table:
@@ -93,8 +93,8 @@ def run(params):
             start, end = coords.split("-")
             start, end = int(start), int(end)
 
-            top_case_zscore, cases_with_high_counts, case_counts, case_zscores, top_control_zscore, \
-             controls_with_high_counts, control_counts, control_zscores = common.run_zscore_analysis(
+            detected_cases, detected_controls, top_case_zscore, cases_with_high_counts, case_counts, case_zscores, \
+            top_control_zscore, controls_with_high_counts, control_counts, control_zscores = common.run_zscore_analysis(
                 sample_status, row["sample_counts"]
             )
 
@@ -115,6 +115,8 @@ def run(params):
                 start,
                 end,
                 row["unit"],
+                detected_cases,
+                detected_controls,
                 "{:.2f}".format(top_case_zscore),
                 encoded_case_label_info,
                 encoded_case_count_info,

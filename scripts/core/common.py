@@ -190,7 +190,7 @@ def run_zscore_analysis(sample_status, sample_counts):
     # Change: record zscores for cases and controls in the control distribution:
     case_zscores = list()
     cases_with_high_counts = {}
-    top_case_zscore = -1
+    top_case_zscore = 0
     for sample, count in case_counts.items():
         zscore = (count - mu) / sigma
         if zscore > 1.0:
@@ -199,12 +199,14 @@ def run_zscore_analysis(sample_status, sample_counts):
         case_zscores.append(zscore)
     control_zscores = list()
     controls_with_high_counts = {}
-    top_control_zscore = -1
+    top_control_zscore = 0
     for sample, count in control_counts.items():
         zscore = (count - mu) / sigma
         if zscore > 1.0:
             controls_with_high_counts[sample] = count
             top_control_zscore = max(top_control_zscore, zscore)
         control_zscores.append(zscore)
-    return (top_case_zscore, cases_with_high_counts, list(case_counts.values()), case_zscores, top_control_zscore,
+    detected_cases = max(0,len(filter(list(case_counts.values()))))
+    detected_controls = max(0,len(filter(list(control_counts.values()))))
+    return (detected_cases, detected_controls, top_case_zscore, cases_with_high_counts, list(case_counts.values()), case_zscores, top_control_zscore,
             controls_with_high_counts, list(control_counts.values()), control_zscores)
