@@ -81,7 +81,7 @@ def run(params):
     manifest = common.load_manifest(params.manifest_path)
     sample_status = common.extract_case_control_assignments(manifest)
 
-    header = "contig\tstart\tend\tmotif\tthreshold\tsigma\tmu\tsamp_shapiro_w\tsamp_shapiro_p\tchi2\tchi2p\twelchtstat\twelchpval\tmannwhitneystat\tmannwhitneyp\tcase_skew\tcase_inlier_skew\tcase_outlier_skew\tcontrol_skew\tcontrol_inlier_skew\tcontrol_outlier_skew\tcase_kurtosis\tcase_inlier_kurtosis\tcase_outlier_kurtosis\tcontrol_kurtosis\tcontrol_inlier_kurtosis\tcontrol_outlier_kurtosis\tdetected_cases\tdetected_controls\ttop_case_zscore\thigh_case_counts\tcase_counts\tcase_zscores\ttop_control_zscore\thigh_control_counts\tcontrol_counts\tcontrol_zscores"
+    header = "contig\tstart\tend\tmotif\tthreshold\tsigma\tmu\tnormtest_stat\tnormtest_p\tchi2\tchi2p\twelchtstat\twelchpval\tmannwhitneystat\tmannwhitneyp\tcase_skew\tcase_inlier_skew\tcase_outlier_skew\tcontrol_skew\tcontrol_inlier_skew\tcontrol_outlier_skew\tcase_kurtosis\tcase_inlier_kurtosis\tcase_outlier_kurtosis\tcontrol_kurtosis\tcontrol_inlier_kurtosis\tcontrol_outlier_kurtosis\tdetected_cases\tdetected_controls\ttop_case_zscore\thigh_case_counts\tcase_counts\tcase_zscores\ttop_control_zscore\thigh_control_counts\tcontrol_counts\tcontrol_zscores"
     with open(params.output_path, "wt") as results_file:
         results_file.write(header)
         results_file.write("\n")
@@ -94,7 +94,7 @@ def run(params):
             start, end = coords.split("-")
             start, end = int(start), int(end)
 
-            threshold, sigma, mu, shapiro_w, shapiro_p, chi2, chi2p, welchtstat, welchpval, mannwhitneystat, \
+            threshold, sigma, mu, normtest_stat, normtest_p, chi2, chi2p, welchtstat, welchpval, mannwhitneystat, \
              mannwhitneyp, case_skew, case_inlier_skew, case_outlier_skew, control_skew, control_inlier_skew, \
              control_outlier_skew, case_kurtosis, case_inlier_kurtosis, case_outlier_kurtosis, control_kurtosis, \
              control_inlier_kurtosis, control_outlier_kurtosis, detected_cases, detected_controls, top_case_zscore, \
@@ -123,7 +123,7 @@ def run(params):
                 threshold,
                 sigma,
                 mu,
-                shapiro_w, shapiro_p, chi2, chi2p, welchtstat, welchpval, mannwhitneystat, mannwhitneyp, case_skew, case_inlier_skew, case_outlier_skew, control_skew, control_inlier_skew, control_outlier_skew, case_kurtosis, case_inlier_kurtosis, case_outlier_kurtosis, control_kurtosis, control_inlier_kurtosis, control_outlier_kurtosis,
+                normtest_stat, normtest_p, chi2, chi2p, welchtstat, welchpval, mannwhitneystat, mannwhitneyp, case_skew, case_inlier_skew, case_outlier_skew, control_skew, control_inlier_skew, control_outlier_skew, case_kurtosis, case_inlier_kurtosis, case_outlier_kurtosis, control_kurtosis, control_inlier_kurtosis, control_outlier_kurtosis,
                 detected_cases,
                 detected_controls,
                 "{:.2f}".format(top_case_zscore),

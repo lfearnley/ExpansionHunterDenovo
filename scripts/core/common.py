@@ -25,7 +25,7 @@ import logging
 import json
 import scipy.stats as stats
 import numpy as np
-from scipy.stats import shapiro, chi2_contingency, skew, kurtosis, ttest_ind, mannwhitneyu
+from scipy.stats import shapiro, chi2_contingency, skew, kurtosis, ttest_ind, mannwhitneyu, normaltest
 
 from . import regiontools
 
@@ -170,12 +170,12 @@ def run_zscore_analysis(sample_status, sample_counts):
     ## 20220826: LF rewrite
     # Change: estimate quantiles in the control population _only_:
     control_counts = [sample_counts.get(sample, 0) for sample, status in sample_status.items() if status == "control"]
-    quantiles = resample_quantiles(control_counts, 100, 0.95)
+    quantiles = resample_quantiles(control_counts, 1000, 0.95)
     (mu, sigma) = stats.norm.fit(quantiles)
     sigma = max(sigma, 1)
-    shapiro_result = shapiro(quantiles)
-    shapiro_w = shapiro_result.statistic
-    shapiro_p = shapiro_result.pvalue
+    norm_test_result = normaltest(quantiles)
+    normtest_stat = norm_test_result.statistic
+    normtest_p = norm_test_result.pvalue
     case_counts = {
         sample: sample_counts.get(sample, 0)
         for sample, status in sample_status.items()
@@ -267,6 +267,6 @@ def run_zscore_analysis(sample_status, sample_counts):
         mannwhitneyp = np.nan
     detected_cases = max(0,len(list(filter(None, list(case_counts.values())))))
     detected_controls = max(0,len(list(filter(None, list(control_counts.values())))))
-    return ((mu+sigma), sigma, mu, shapiro_w, shapiro_p, chi2, chi2p, welchtstat, welchpval, mannwhitneystat, mannwhitneyp, case_skew, case_inlier_skew, case_outlier_skew, control_skew, control_inlier_skew, control_outlier_skew, case_kurtosis, case_inlier_kurtosis, case_outlier_kurtosis, control_kurtosis, control_inlier_kurtosis, control_outlier_kurtosis, detected_cases, detected_controls, top_case_zscore,
+    return ((mu+sigma), sigma, mu, normtest_stat, normtest_p, chi2, chi2p, welchtstat, welchpval, mannwhitneystat, mannwhitneyp, case_skew, case_inlier_skew, case_outlier_skew, control_skew, control_inlier_skew, control_outlier_skew, case_kurtosis, case_inlier_kurtosis, case_outlier_kurtosis, control_kurtosis, control_inlier_kurtosis, control_outlier_kurtosis, detected_cases, detected_controls, top_case_zscore,
             cases_with_high_counts, list(case_counts.values()), case_zscores, top_control_zscore,
             controls_with_high_counts, list(control_counts.values()), control_zscores)
