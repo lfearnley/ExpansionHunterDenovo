@@ -226,24 +226,42 @@ def run_zscore_analysis(sample_status, sample_counts):
     control_outliers = np.array(control_outliers)
     control_inliers = np.array(control_inliers)
     chi2, chi2p, dof, ex = chi2_contingency([[len(case_outliers), len(control_outliers)], [len(case_inliers), len(control_inliers)]])
-    case_skew = skew(case_count_list)
-    case_kurtosis = kurtosis(case_count_list)
-    case_outlier_kurtosis = kurtosis(case_outliers)
-    case_outlier_skew = skew(case_outliers)
-    case_inlier_kurtosis = kurtosis(case_inliers)
-    case_inlier_skew = skew(case_inliers)
-    control_kurtosis = kurtosis(control_count_list)
-    control_skew = skew(control_count_list)
-    control_outlier_kurtosis = kurtosis(control_outliers)
-    control_outlier_skew = skew(control_outliers)
-    control_inlier_kurtosis = kurtosis(control_inliers)
-    control_inlier_skew = skew(control_inliers)
-    welcht_test = ttest_ind(case_outliers, control_outliers, equal_var=False, alternative="greater")
-    welchtstat = welcht_test.statistic
-    welchpval = welcht_test.pvalue
-    mwu_test = mannwhitneyu(case_outliers, control_outliers, alternative="greater")
-    mannwhitneystat = mwu_test.statistic
-    mannwhitneyp = mwu_test.pvalue
+    if len(case_outliers) != 0 and len(control_outliers) != 0:
+        case_skew = skew(case_count_list)
+        case_kurtosis = kurtosis(case_count_list)
+        case_outlier_kurtosis = kurtosis(case_outliers)
+        case_outlier_skew = skew(case_outliers)
+        case_inlier_kurtosis = kurtosis(case_inliers)
+        case_inlier_skew = skew(case_inliers)
+        control_kurtosis = kurtosis(control_count_list)
+        control_skew = skew(control_count_list)
+        control_outlier_kurtosis = kurtosis(control_outliers)
+        control_outlier_skew = skew(control_outliers)
+        control_inlier_kurtosis = kurtosis(control_inliers)
+        control_inlier_skew = skew(control_inliers)
+        welcht_test = ttest_ind(case_outliers, control_outliers, equal_var=False, alternative="greater")
+        welchtstat = welcht_test.statistic
+        welchpval = welcht_test.pvalue
+        mwu_test = mannwhitneyu(case_outliers, control_outliers, alternative="greater")
+        mannwhitneystat = mwu_test.statistic
+        mannwhitneyp = mwu_test.pvalue
+    else:
+        case_skew = np.nan
+        case_kurtosis = np.nan
+        case_outlier_kurtosis = np.nan
+        case_outlier_skew = np.nan
+        case_inlier_kurtosis = np.nan
+        case_inlier_skew = np.nan
+        control_kurtosis = np.nan
+        control_skew = np.nan
+        control_outlier_kurtosis = np.nan
+        control_outlier_skew = np.nan
+        control_inlier_kurtosis = np.nan
+        control_inlier_skew = np.nan
+        welchtstat = np.nan
+        welchpval = np.nan
+        mannwhitneystat = np.nan
+        mannwhitneyp = np.nan
     detected_cases = max(0,len(list(filter(None, list(case_counts.values())))))
     detected_controls = max(0,len(list(filter(None, list(control_counts.values())))))
     return ((mu+sigma), sigma, mu, shapiro_w, shapiro_p, chi2, chi2p, welchtstat, welchpval, mannwhitneystat, mannwhitneyp, case_skew, case_inlier_skew, case_outlier_skew, control_skew, control_inlier_skew, control_outlier_skew, case_kurtosis, case_inlier_kurtosis, case_outlier_kurtosis, control_kurtosis, control_inlier_kurtosis, control_outlier_kurtosis, detected_cases, detected_controls, top_case_zscore,
