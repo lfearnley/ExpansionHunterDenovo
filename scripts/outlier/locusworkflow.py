@@ -30,6 +30,7 @@ import scipy.stats as stats
 
 from collections import namedtuple
 
+import tqdm
 from core import regiontools, common
 
 def load_target_regions(fname):
@@ -84,7 +85,7 @@ def run(params):
     with open(params.output_path, "wt") as results_file:
         results_file.write(header)
         results_file.write("\n")
-        for row in count_table:
+        for row in tqdm.tqdm(count_table):
             region_encoding = row["region"]
             if region_encoding == "unaligned":
                 continue
