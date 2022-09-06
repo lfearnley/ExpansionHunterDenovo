@@ -225,8 +225,9 @@ def run_zscore_analysis(sample_status, sample_counts):
     case_inliers = np.array(case_inliers)
     control_outliers = np.array(control_outliers)
     control_inliers = np.array(control_inliers)
-    chi2, chi2p, dof, ex = chi2_contingency([[len(case_outliers), len(control_outliers)], [len(case_inliers), len(control_inliers)]])
     if len(case_outliers) != 0 and len(control_outliers) != 0:
+        chi2, chi2p, dof, ex = chi2_contingency(
+            [[len(case_outliers), len(control_outliers)], [len(case_inliers), len(control_inliers)]])
         case_skew = skew(case_count_list)
         case_kurtosis = kurtosis(case_count_list)
         case_outlier_kurtosis = kurtosis(case_outliers)
@@ -246,6 +247,8 @@ def run_zscore_analysis(sample_status, sample_counts):
         mannwhitneystat = mwu_test.statistic
         mannwhitneyp = mwu_test.pvalue
     else:
+        chi2 = np.nan
+        chi2p = np.nan
         case_skew = np.nan
         case_kurtosis = np.nan
         case_outlier_kurtosis = np.nan
