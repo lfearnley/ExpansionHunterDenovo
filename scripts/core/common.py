@@ -25,6 +25,7 @@ import logging
 import json
 import scipy.stats as stats
 import numpy as np
+from scipy.stats import shapiro
 
 from . import regiontools
 
@@ -172,19 +173,19 @@ def run_zscore_analysis(sample_status, sample_counts):
     quantiles = resample_quantiles(control_counts, 100, 0.95)
     (mu, sigma) = stats.norm.fit(quantiles)
     sigma = max(sigma, 1)
-
+    shapiro_result = shapiro(quantiles)
+    shapiro_w = shapiro_result.statistic
+    shapiro_p = shapiro_result.pvalue
     case_counts = {
         sample: sample_counts.get(sample, 0)
         for sample, status in sample_status.items()
         if status == "case"
     }
-
     control_counts = {
         sample: sample_counts.get(sample, 0)
         for sample, status in sample_status.items()
         if status == "control"
     }
-
     assert len(case_counts) >= 1, "Manifest must contain at least one case"
     assert len(control_counts) >= 1, "Manifest must contain at least one control"
     # Change: record zscores for cases and controls in the control distribution:
@@ -208,5 +209,6 @@ def run_zscore_analysis(sample_status, sample_counts):
         control_zscores.append(zscore)
     detected_cases = max(0,len(list(filter(None, list(case_counts.values())))))
     detected_controls = max(0,len(list(filter(None, list(control_counts.values())))))
-    return (detected_cases, detected_controls, top_case_zscore, cases_with_high_counts, list(case_counts.values()), case_zscores, top_control_zscore,
+    return ((mu+sigma), sigma, mu, shapiro_w, shapiro_p, detected_cases, detected_controls, top_case_zscore,
+            cases_with_high_counts, list(case_counts.values()), case_zscores, top_control_zscore,
             controls_with_high_counts, list(control_counts.values()), control_zscores)
