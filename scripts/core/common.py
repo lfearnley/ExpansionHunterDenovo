@@ -170,7 +170,7 @@ def run_zscore_analysis(sample_status, sample_counts):
     ## 20220826: LF rewrite
     # Change: estimate quantiles in the control population _only_:
     control_counts = [sample_counts.get(sample, 0) for sample, status in sample_status.items() if status == "control"]
-    quantiles = resample_quantiles(control_counts, 1000, 0.95)
+    quantiles = resample_quantiles(control_counts, 500, 0.95)
     (mu, sigma) = stats.norm.fit(quantiles)
     sigma = max(sigma, 1)
     norm_test_result = normaltest(quantiles)
