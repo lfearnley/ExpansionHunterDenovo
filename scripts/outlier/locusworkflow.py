@@ -73,6 +73,7 @@ def run(params):
     sample_stats = multisample_profile["Parameters"]
     common.depth_normalize_counts(sample_stats, count_table)
 
+
     if params.target_region_path:
         target_regions = load_target_regions(params.target_region_path)
         logging.info("Restricting analysis to %i regions", len(target_regions))
