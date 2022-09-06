@@ -115,7 +115,7 @@ def run(params):
             encoded_case_zscore_info = ",".join([str(x) for x in case_zscores])
             encoded_control_count_info = ",".join([str(x) for x in control_counts])
             encoded_control_zscore_info = ",".join([str(x) for x in control_zscores])
-            out_list = [contig,list(control_counts.values()),
+            out_list = [contig,
                 start,
                 end,
                 row["unit"],
