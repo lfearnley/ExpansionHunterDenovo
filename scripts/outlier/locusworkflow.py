@@ -122,7 +122,7 @@ def run(params):
                 threshold,
                 sigma,
                 mu,
-                shapiro_w, shapiro_p,
+                shapiro_w, shapiro_p, chi2, chi2p, welchtstat, welchpval, mannwhitneystat, mannwhitneyp, case_skew, case_inlier_skew, case_outlier_skew, control_skew, control_inlier_skew, control_outlier_skew, case_kurtosis, case_inlier_kurtosis, case_outlier_kurtosis, control_kurtosis, control_inlier_kurtosis, control_outlier_kurtosis,
                 detected_cases,
                 detected_controls,
                 "{:.2f}".format(top_case_zscore),
