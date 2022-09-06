@@ -192,26 +192,40 @@ def run_zscore_analysis(sample_status, sample_counts):
     case_zscores = list()
     cases_with_high_counts = {}
     top_case_zscore = 0
+    case_inliers = list()
+    case_outliers = list()
+    case_count_list = list()
     for sample, count in case_counts.items():
         zscore = (count - mu) / sigma
         if zscore > 1.0:
+            case_outliers.append(count)
             cases_with_high_counts[sample] = count
             top_case_zscore = max(top_case_zscore, zscore)
+        else:
+            case_inliers.append(count)
+        case_count_list.append(count)
         case_zscores.append(zscore)
     control_zscores = list()
+    control_inliers = list()
     controls_with_high_counts = {}
     top_control_zscore = 0
+    control_count_list = list()
+    control_outliers = list()
     for sample, count in control_counts.items():
         zscore = (count - mu) / sigma
         if zscore > 1.0:
+            control_outliers.append(count)
             controls_with_high_counts[sample] = count
             top_control_zscore = max(top_control_zscore, zscore)
+        else:
+            control_inliers.append(count)
+        control_count_list.append(count)
         control_zscores.append(zscore)
-    case_outliers = np.array(cases_with_high_counts.values())
-    case_inliers = np.array([x for x in case_counts.values() if x not in set(case_outliers)])
-    control_outliers = np.array(controls_with_high_counts.values())
-    control_inliers = np.array([x for x in control_counts.values() if x not in set(control_outliers)])
-    chi2, chi2p, dof, ex = chi2_contingency([[len(case_outliers), len(control_outliers)], [len(case_counts)-len(case_outliers), len(control_counts)-len(control_outliers)]])
+    case_outliers = np.array(case_outliers)
+    case_inliers = np.array(case_inliers)
+    control_outliers = np.array(control_outliers)
+    control_inliers = np.array(control_inliers)
+    chi2, chi2p, dof, ex = chi2_contingency([[len(case_outliers), len(control_outliers)], [len(case_inliers), len(control_inliers)]])
     case_skew = skew(case_counts)
     case_kurtosis = kurtosis(case_counts)
     case_outlier_kurtosis = kurtosis(case_outliers)
