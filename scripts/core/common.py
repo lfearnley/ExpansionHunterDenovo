@@ -25,7 +25,7 @@ import logging
 import json
 import scipy.stats as stats
 import numpy as np
-from scipy.stats import shapiro
+from scipy.stats import shapiro, chi2_contingency, skew, kurtosis, ttest_ind, mannwhitneyu
 
 from . import regiontools
 
@@ -207,8 +207,31 @@ def run_zscore_analysis(sample_status, sample_counts):
             controls_with_high_counts[sample] = count
             top_control_zscore = max(top_control_zscore, zscore)
         control_zscores.append(zscore)
+    case_outliers = np.array(cases_with_high_counts.values())
+    case_inliers = np.array([x for x in case_counts if x not in set(case_outliers)])
+    control_outliers = np.array(controls_with_high_counts.values())
+    control_inliers = np.array([x for x in control_counts if x not in set(control_outliers)])
+    chi2, chi2p, dof, ex = chi2_contingency([[len(case_outliers), len(control_outliers)], [len(case_counts)-len(case_outliers), len(control_counts)-len(control_outliers)]])
+    case_skew = skew(case_counts)
+    case_kurtosis = kurtosis(case_counts)
+    case_outlier_kurtosis = kurtosis(case_outliers)
+    case_outlier_skew = skew(case_outliers)
+    case_inlier_kurtosis = kurtosis(case_inliers)
+    case_inlier_skew = skew(case_inliers)
+    control_kurtosis = kurtosis(control_counts)
+    control_skew = skew(control_counts)
+    control_outlier_kurtosis = kurtosis(control_outliers)
+    control_outlier_skew = skew(control_outliers)
+    control_inlier_kurtosis = kurtosis(control_inliers)
+    control_inlier_skew = skew(control_inliers)
+    welcht_test = ttest_ind(case_outliers, control_outliers, equal_var=False, alternative="greater")
+    welchtstat = welcht_test.statistic
+    welchpval = welcht_test.pvalue
+    mwu_test = mannwhitneyu(case_outliers, control_outliers, alternative="greater")
+    mannwhitneystat = mwu_test.statistic
+    mannwhitneyp = mwu_test.pvalue
     detected_cases = max(0,len(list(filter(None, list(case_counts.values())))))
     detected_controls = max(0,len(list(filter(None, list(control_counts.values())))))
-    return ((mu+sigma), sigma, mu, shapiro_w, shapiro_p, detected_cases, detected_controls, top_case_zscore,
+    return ((mu+sigma), sigma, mu, shapiro_w, shapiro_p, chi2, chi2p, welchtstat, welchpval, mannwhitneystat, mannwhitneyp, case_skew, case_inlier_skew, case_outlier_skew, control_skew, control_inlier_skew, control_outlier_skew, case_kurtosis, case_inlier_kurtosis, case_outlier_kurtosis, control_kurtosis, control_inlier_kurtosis, control_outlier_kurtosis, detected_cases, detected_controls, top_case_zscore,
             cases_with_high_counts, list(case_counts.values()), case_zscores, top_control_zscore,
             controls_with_high_counts, list(control_counts.values()), control_zscores)
